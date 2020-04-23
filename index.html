@@ -1,0 +1,193 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"><!--  JQUERY  -->
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+<!--[if IE]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade
+  your browser</a> to improve your experience and security.</p>
+<![endif]-->
+
+<!-- Add your site or application content here -->
+<h1>Welcome to Meme Piano!</h1>
+
+<canvas width="900" height="600" id="canv" style="margin:20px;"></canvas>
+<div id="htmlpiano">
+  <div id="whites"></div>
+  <div id="blacks"></div>
+</div>
+
+<label for="memeselect"></label><select id="memeselect">
+  <option value="Airhorn">Airhorn</option>
+  <option value="Bruh">Bruh</option>
+  <option value="Windows XP error">Windows XP error</option>
+  <option value="Wow">Wow</option>
+</select>
+
+
+<footer>&copy Jan Provazník 2020</footer>
+<script src="js/vendor/modernizr-3.8.0.min.js"></script>
+
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.4.1.min.js"><\/script>')</script>
+<script src="js/plugins.js"></script>
+<script src="js/main.js"></script>
+
+<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+<script>
+  window.ga = function () {
+    ga.q.push(arguments)
+  };
+  ga.q = [];
+  ga.l = +new Date;
+  ga('create', 'UA-XXXXX-Y', 'auto');
+  ga('set', 'transport', 'beacon');
+  ga('send', 'pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  //next to which whites are blacks
+  const blacks = [false, true, true, true, false, true, true, false, true, true, true, false];
+  var pressedW = new Array(12).fill(false);
+  var pressedB = new Array(12).fill(false);
+  var audiosW = new Array(12);
+  var audiosB = new Array(12);
+  var canvas = document.getElementById("canv");
+  var mouse = {x: 0, y: 0, pressed: false};
+  draw();
+  makeAudios("Airhorn");
+  //addKeys();
+  canvas.addEventListener('mousedown', function (e) {
+    mouse.x = e.pageX - this.offsetLeft;
+    mouse.y = e.pageY - this.offsetTop;
+  //  alert(mouse.x);
+   // alert(mouse.y);
+    calculatePress();
+  }, false);
+ var memeselect = document.getElementById('memeselect');
+  memeselect.onchange = ()=>{
+    console.log(memeselect.selectedIndex);
+    const xd = memeselect.children[memeselect.selectedIndex].innerHTML;
+    makeAudios(xd);
+  };
+
+
+  function calculatePress(){
+    let cw = canvas.clientWidth;
+    //blacks first
+    if (mouse.y < 2/3 * canvas.clientHeight)
+    {
+      for (var i =0;i<12;i++)
+      {
+        if (blacks[i])
+        {
+          let currentX = i * cw / 12;
+          if(mouse.x >currentX-cw/48 && mouse.x <currentX+cw/48){
+            var a = new Audio(audiosB[i]);
+            a.play();
+            return;
+          }
+        }
+      }
+    }
+    for (var j =0;j<12;j++)
+    {
+
+      let currentX = j * cw / 12;
+      if(mouse.x >currentX && mouse.x <currentX+cw/12){
+        var aud = new Audio(audiosW[j]);
+        aud.play();
+        return;
+            }
+      }
+
+    }
+
+  function makeAudios(name){
+    var tempblacks = new Array(12);
+      for (var i =0;i<20;i++)
+      {
+        let num;
+        if (i<10)
+        {
+          num ="0"+i.toString();
+        }
+        else
+        {
+          num=i;
+        }
+        var path = "sounds/"+name+"/"+num+".mp3";
+        if (i <12){
+          audiosW[i]=path;
+        }else{
+          tempblacks[i-12] = path;
+        }
+      }
+      var j = 0;
+    for (var k=0; k< blacks.length;k++) {
+     if(blacks[k]){
+       audiosB[k]=tempblacks[j];
+       j++;
+
+     }
+    }
+  }
+
+
+  function draw() {
+
+    let cw = canvas.clientWidth;
+    let ch = canvas.clientHeight;
+
+    var ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#EEEEEE";
+    ctx.fillRect(0, 0, cw, ch);
+
+    for (let i = 0; i < 12; i++) {
+      x = i * cw / 12;
+      ww = cw / 12;
+      ctx.strokeStyle = "black";
+      ctx.strokeRect(x, 0, ww, ch);
+
+      if (blacks[i]) {
+        ctx.fillStyle = "black";
+        ctx.fillRect(x - cw / 48, 0, cw / 24, 2 / 3 * ch);
+      }
+    }
+  }
+/*
+  function addKeys() {
+    var whites = document.getElementById("whites");
+    // var wkey = '<div class="wkey">ldfa</div>';
+    var wkey = new HTMLDivElement();
+    wkey.textContent = "chleba";
+    wkey.classList.add("wkey");
+    for (let i = 0; i < 12; i++) {
+      whites.append(wkey);
+    }
+
+  }
+*/
+
+</script>
+
+</body>
+
+</html>
