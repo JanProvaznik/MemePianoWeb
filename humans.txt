@@ -3,7 +3,7 @@
 
 # TEAM
 
-    <name> -- <role> -- <twitter>
+    <janpro> -- <chief developer, ceo of memes> <janproxdd@gmail.com>
 
 # THANKS
 
